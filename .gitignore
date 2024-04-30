@@ -1,0 +1,17 @@
+main.c
+
+a.out
+
+*.o
+
+*.a
+
+.DS_Store
+
+*.txt
+
+Makefile
+
+*.json
+
+
