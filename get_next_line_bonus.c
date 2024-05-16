@@ -6,7 +6,7 @@
 /*   By: dalabrad <dalabrad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:02:28 by dalabrad          #+#    #+#             */
-/*   Updated: 2024/05/15 15:07:54 by dalabrad         ###   ########.fr       */
+/*   Updated: 2024/05/16 10:45:13 by dalabrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,25 +61,25 @@ char	*get_next_line(int fd)
 	static char	buffer[4096][BUFFER_SIZE + 1];
 	int			bytes_read;
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, NULL, 0) < 0)
-		return (NULL);
+	if (fd < 0 || BUFFER_SIZE <= 0 || fd > 4096)
+		return (ft_bzero(buffer[fd], BUFFER_SIZE + 1), NULL);
 	line = (char *)ft_calloc(1, sizeof(char));
 	if (!line)
 		return (NULL);
-	if (buffer[fd][0] != '\0')
-		line = append_buffer_to_line(line, &buffer[fd][0]);
+	if (*buffer[fd] != '\0')
+		line = append_buffer_to_line(line, buffer[fd]);
 	if (!line)
-		return (ft_bzero(&buffer[fd][0], BUFFER_SIZE), NULL);
+		return (ft_bzero(buffer[fd], BUFFER_SIZE + 1), NULL);
 	bytes_read = 1;
 	while (bytes_read > 0 && ft_strchr(line, '\n') == NULL && line)
 	{
-		bytes_read = read(fd, &buffer[fd][0], BUFFER_SIZE);
+		bytes_read = read(fd, buffer[fd], BUFFER_SIZE);
 		if (bytes_read == -1)
-			return (free(line), ft_bzero(&buffer[fd][0], BUFFER_SIZE), NULL);
+			return (free(line), ft_bzero(buffer[fd], BUFFER_SIZE + 1), NULL);
 		buffer[fd][bytes_read] = '\0';
-		line = append_buffer_to_line(line, &buffer[fd][0]);
+		line = append_buffer_to_line(line, buffer[fd]);
 	}
 	if (*line == '\0')
-		return (free(line), ft_bzero(&buffer[fd][0], BUFFER_SIZE), NULL);
-	return (remaining_buffer(&buffer[fd][0]), line);
+		return (free(line), ft_bzero(buffer[fd], BUFFER_SIZE + 1), NULL);
+	return (remaining_buffer(buffer[fd]), line);
 }

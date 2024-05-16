@@ -6,7 +6,7 @@
 /*   By: dalabrad <dalabrad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 15:29:31 by dalabrad          #+#    #+#             */
-/*   Updated: 2024/05/15 15:41:19 by dalabrad         ###   ########.fr       */
+/*   Updated: 2024/05/16 10:42:07 by dalabrad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,25 +61,25 @@ char	*get_next_line(int fd)
 	static char	buffer[BUFFER_SIZE + 1];
 	int			bytes_read;
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, NULL, 0) < 0)
-		return (NULL);
+	if (fd < 0 || BUFFER_SIZE <= 0 || fd > 4096)
+		return (ft_bzero(buffer, BUFFER_SIZE + 1), NULL);
 	line = (char *)ft_calloc(1, sizeof(char));
 	if (!line)
 		return (NULL);
-	if (buffer[0] != '\0')
-		line = append_buffer_to_line(line, &buffer[0]);
+	if (*buffer != '\0')
+		line = append_buffer_to_line(line, buffer);
 	if (!line)
-		return (ft_bzero(&buffer[0], BUFFER_SIZE), NULL);
+		return (ft_bzero(buffer, BUFFER_SIZE + 1), NULL);
 	bytes_read = 1;
 	while (bytes_read > 0 && ft_strchr(line, '\n') == NULL && line)
 	{
-		bytes_read = read(fd, &buffer[0], BUFFER_SIZE);
+		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (bytes_read == -1)
-			return (free(line), ft_bzero(&buffer[0], BUFFER_SIZE), NULL);
+			return (free(line), ft_bzero(buffer, BUFFER_SIZE + 1), NULL);
 		buffer[bytes_read] = '\0';
-		line = append_buffer_to_line(line, &buffer[0]);
+		line = append_buffer_to_line(line, buffer);
 	}
 	if (*line == '\0')
-		return (free(line), ft_bzero(&buffer[0], BUFFER_SIZE), NULL);
-	return (remaining_buffer(&buffer[0]), line);
+		return (free(line), ft_bzero(buffer, BUFFER_SIZE + 1), NULL);
+	return (remaining_buffer(buffer), line);
 }
